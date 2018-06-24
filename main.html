@@ -1,0 +1,775 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #main {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .modify {
+            height: 100%;
+            width: 100%;
+        }
+        
+        body {
+            margin: 0;
+        }
+        
+        .arena {
+            border: 5px solid white;
+            position: fixed;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .boxes {
+            position: fixed;
+            border: 5px solid yellow;
+        }
+        
+        .sequence {
+            position: fixed;
+            align-content: center;
+            align-items: center;
+            height: 10%;
+            font-size: 2em;
+            text-align: center;
+        }
+        
+        .suivant {
+            border-radius: 0.3em;
+            width: 200px;
+            text-align: center;
+            bottom: 10%;
+            position: fixed;
+            right: 20%;
+            height: 50px;
+            font-size: 250%;
+            cursor: pointer;
+            background: #b3dced;
+            border: 4px solid burlywood;
+            /* Old browsers */
+            background: -moz-linear-gradient(45deg, #b3dced 0%, #29b8e5 50%, #bce0ee 100%);
+            /* FF3.6-15 */
+            background: -webkit-linear-gradient(45deg, #b3dced 0%, #29b8e5 50%, #bce0ee 100%);
+            /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(45deg, #b3dced 0%, #29b8e5 50%, #bce0ee 100%);
+            /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#b3dced', endColorstr='#bce0ee', GradientType=1);
+            /* IE6-9 fallback on horizontal gradient */
+        }
+        
+        .clear {
+            border-radius: 0.3em;
+            width: 200px;
+            text-align: center;
+            bottom: 10%;
+            position: fixed;
+            left: 20%;
+            height: 50px;
+            font-size: 250%;
+            cursor: pointer;
+            background: #b3dced;
+            border: 4px solid darkgray;
+            background: rgb(206, 220, 231);
+            /* Old browsers */
+            background: -moz-linear-gradient(-45deg, rgba(206, 220, 231, 1) 0%, rgba(89, 106, 114, 1) 100%);
+            /* FF3.6-15 */
+            background: -webkit-linear-gradient(-45deg, rgba(206, 220, 231, 1) 0%, rgba(89, 106, 114, 1) 100%);
+            /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(135deg, rgba(206, 220, 231, 1) 0%, rgba(89, 106, 114, 1) 100%);
+            /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72', GradientType=1);
+            /* IE6-9 fallback on horizontal gradient */
+        }
+        
+        .platform {
+            position: fixed;
+            color: aqua;
+        }
+        
+        .height {
+            display: block;
+            border: 5px solid orange;
+            background: #4c4c4c;
+            /* Old browsers */
+            background: -moz-linear-gradient(-45deg, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%);
+            /* FF3.6-15 */
+            background: -webkit-linear-gradient(-45deg, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%);
+            /* Chrome10-25,Safari5.1-6 */
+            background: linear-gradient(135deg, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%);
+            /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+            filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313', GradientType=1);
+            /* IE6-9 fallback on horizontal gradient */
+            color: bisque;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        
+        .structures {
+            display: flex;
+            flex-direction: row;
+            justify-content: center
+        }
+        
+        .sidenav {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: space-evenly;
+            height: 100%;
+            width: 0px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 0;
+        }
+        
+        .sele {
+            color: aliceblue;
+            display: none;
+            padding-top: 20;
+            word-spacing: 5;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .selectStructure {
+            background-color: #7c7e6b;
+            border-color: orange;
+            border-collapse: collapse;
+        }
+        
+        ::placeholder {
+            color: blue;
+        }
+        
+        .case {
+            color: aliceblue;
+            display: flex;
+            flex-direction: row;
+            padding-top: 110;
+            padding-left: 40;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chunks {
+            width: 50px;
+            background-color: #7c7e6b;
+            color: black;
+            border-color: orange;
+            border-collapse: collapse;
+        }
+        
+        .sidenav2 {
+            height: 100%;
+            width: 0px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 50px;
+        }
+        
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        
+        .separator {
+            height: 50px;
+            display: flex;
+            color: aliceblue;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidenav2 a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        
+        .sidenav2 a:hover {
+            color: #f1f1f1;
+        }
+        
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+        
+        .sidenav2 .closebtn2 {
+            position: absolute;
+            top: 0;
+            font-size: 36px;
+        }
+        
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+            .sidenav a {
+                font-size: 18px;
+            }
+            .sidenav2 {
+                padding-top: 15px;
+            }
+            .sidenav2 a {
+                font-size: 18px;
+            }
+        }
+        
+        @media screen and (max-width:950px) {
+            .selectStructure {
+                width: 90px;
+            }
+        }
+        
+        @media screen and (max-width:650px),
+        (max-height:600px) {
+            /*oh god why or is "," and not "|" or "or" ?*/
+            .height {
+                font-size: 1em;
+            }
+        }
+    </style>
+    <script>
+        function openNav(i) {
+            document.getElementById("side" + i).style.display = "none"
+            document.getElementById("mySidenav" + i).style.width = this.innerWidth / 8 + i * 100 + 50 + "px";
+            if (!i) {
+                var all = document.getElementsByClassName("height");
+            [].forEach.call(all, function (el) {
+                    el.style.display = "block";
+                    el.style.width = Math.min(this.innerHeight, this.innerWidth) / 16.2
+                    el.style.height = Math.min(this.innerHeight, this.innerWidth) / 16.2
+                    el.style.lineHeight = Math.min(this.innerHeight, this.innerWidth) / 400;
+                })
+            }
+        }
+
+        function closeNav(i) {
+            document.getElementById("side" + i).style.display = "block"
+            document.getElementById("mySidenav" + i).style.width = "";
+            //bad code implementation and unnecessary
+            if (!i && 0) {
+                var all = document.getElementsByClassName("height");
+            [].forEach.call(all, function (el) {
+                    el.style.display = "none";
+                })
+            }
+        }
+
+        function addFields() {
+            struct = struct = [["End city", [10387313, 20]], ["Desert Temple", [14357617, 32]], ["Igloo", [14357617, 32]], ["Jungle Temple", [14357617, 32]], ["Mansion", [10387319, 80]]
+            , ["Ocean Monument", [10387313, 32]], ["Village", [14357617, 32]], ["Witch Hut", [14357617, 32]]];
+            var blank = document.createElement("div")
+            blank.innerHTML = "Structure Location";
+            blank.className = "separator";
+            document.getElementById("mySidenav1").appendChild(blank);
+            for (let i = 0; i < 8; i++) {
+                let currentDiv = document.createElement("div");
+                currentDiv.id = "s" + i;
+                currentDiv.className = "structures";
+                let subDiv0 = document.createElement("select");
+                subDiv0.className = 'selectStructure';
+                for (let j = 0; j < struct.length; j++) {
+                    let subDiv00 = document.createElement("option")
+                    subDiv00.label=j
+                    subDiv00.value = struct[j][1]
+                    subDiv00.innerHTML = struct[j][0]
+                    subDiv0.appendChild(subDiv00)
+                }
+                let subDiv1 = document.createElement("input");
+                subDiv1.placeholder = "chunkX"
+                let subDiv2 = document.createElement("input");
+                subDiv2.placeholder = "chunkZ"
+                if (i < 5) {
+                    subDiv1.required = true;
+                    subDiv2.required = true;
+                    subDiv0.style.borderColor = "red";
+                    subDiv1.style.borderColor = "red";
+                    subDiv2.style.borderColor = "red";
+                }
+                for (let k = 0; k < 3; k++) {
+                    var sub = eval("subDiv" + k)
+                    currentDiv.appendChild(sub)
+                    if (k > 0) {
+                        sub.className = "chunks"
+                    }
+                }
+                document.getElementById("mySidenav1").appendChild(currentDiv);
+            }
+            biomeList = [[0, "Ocean"], [1, "Plains"], [2, "Desert"], [3, "Extreme Hills"], [4, "Forest"], [5, "Taiga"], [6, "Swampland"], [7, "River"], [10, "FrozenOcean"], [11, "FrozenRiver"], [12, "Plains"], [13, "Ice Mountains"], [14, "MushroomIsland"], [15, "MushroomIslandShore"], [16, "Beach"], [17, "DesertHills"], [18, "ForestHills"], [19, "TaigaHills"], [20, "Extreme Hills Edge"], [21, "Jungle"], [22, "JungleHills"], [23, "JungleEdge"], [24, "Deep Ocean"], [25, "Stone Beach"], [26, "Cold Beach"], [27, "Birch Forest"], [28, "Birch Forest Hills"], [29, "Roofed Forest"], [30, "Cold Taiga"], [31, "Cold Taiga Hills"], [32, "Mega Taiga"], [33, "Mega Taiga Hills"], [34, "Extreme Hills+"], [35, "Savanna"], [36, "Savanna Plateau"], [37, "Mesa"], [38, "Mesa Plateau F"], [39, "Mesa Plateau"], [129, "Sunflower Plains"], [130, "Desert M"], [131, "Extreme Hills M"], [132, "Flower Forest"], [133, "Taiga M"], [134, "Swampland M"], [140, "Ice Plains Spikes"], [149, "Jungle M"], [151, "Jungle Edge M"], [155, "Birch Forest M"], [156, "Birch Forest Hills M"], [157, "Roofed Forest M"], [158, "Cold Taiga M"], [160, "Mega Spruce Taiga"], [161, "Redwood Taiga Hills M"], [162, "Extreme Hills+ M"], [163, "Savanna M"], [164, "Savanna Plateau M"], [165, "Mesa (Bryce)"], [166, "Mesa Plateau F M"], [167, "Mesa Plateau M"]];
+            var blank = document.createElement("div")
+            blank.innerHTML = "Biome Coordinates";
+            blank.className = "separator";
+            document.getElementById("mySidenav1").appendChild(blank);
+            for (let i = 0; i < 10; i++) {
+                let currentDiv = document.createElement("div");
+                currentDiv.id = "c" + i;
+                currentDiv.className = "structures";
+                let subDiv0 = document.createElement("select");
+                subDiv0.className = 'selectStructure'
+                for (let j = 0; j < biomeList.length; j++) {
+                    let subDiv00 = document.createElement("option")
+                    subDiv00.value = biomeList[j][0];
+                    subDiv00.innerHTML = biomeList[j][1];
+                    subDiv0.appendChild(subDiv00);
+                }
+                let subDiv1 = document.createElement("input");
+                subDiv1.placeholder = "posX"
+                let subDiv2 = document.createElement("input");
+                subDiv2.placeholder = "posZ"
+                if (i < 4) {
+                    subDiv1.required = true;
+                    subDiv2.required = true;
+                    subDiv0.style.borderColor = "red";
+                    subDiv1.style.borderColor = "red";
+                    subDiv2.style.borderColor = "red";
+                }
+                for (let k = 0; k < 3; k++) {
+                    var sub = eval("subDiv" + k);
+                    currentDiv.appendChild(sub);
+                    if (k > 0) {
+                        sub.className = "chunks";
+                    }
+                }
+                document.getElementById("mySidenav1").appendChild(currentDiv);
+            }
+            var next = document.createElement("div");
+            next.className = "Suivant";
+            next.innerHTML = "NEXT >>";
+            next.addEventListener("click", checkData);
+            document.getElementById("mySidenav1").appendChild(next);
+            var next = document.createElement("div");
+            next.className = "clear";
+            next.innerHTML = "CLEAR";
+            next.addEventListener("click", clearData);
+            document.getElementById("mySidenav1").appendChild(next);
+            master = document.createElement("div");
+            tick = document.createElement("input");
+            pendant = document.createElement("div")
+            pendant.innerHTML = "Customized Biome"
+            tick.type = "checkbox";
+            tick.value = "customized";
+            tick.checked = false;
+            tick.id = "customizedCase"
+            tick.addEventListener("click", displayCustom)
+            master.className = "case";
+            master.appendChild(tick)
+            master.appendChild(pendant)
+            document.getElementById("mySidenav1").appendChild(master);
+            selector = document.createElement("div")
+            selector1 = document.createElement("div")
+            selector.className = "sele"
+            river = document.createElement("input")
+            river.type = "number"
+            river.name = 'riverSize'
+            river.min = 0
+            river.max = 100
+            river.value = 4
+            river.id = "riverSize"
+            biome = document.createElement("input")
+            biome.type = "number"
+            biome.name = 'biomeSize'
+            biome.min = 0
+            biome.max = 100
+            biome.value = 4
+            biome.id = "biomeSize"
+            selector1.innerHTML = "BiomeSize : "
+            selector.id = "selectors"
+            selector1.appendChild(river)
+            selector2 = document.createElement("div")
+            selector2.innerHTML = "    RiverSize : "
+            selector2.appendChild(biome)
+            selector.appendChild(selector1)
+            selector.appendChild(selector2)
+            document.getElementById("mySidenav1").appendChild(selector);
+        }
+
+        function clearData() {
+            localStorage.clear()
+            location.reload()
+        }
+
+        function displayCustom() {
+            if (this.checked) {
+                document.getElementById("selectors").style.display = "flex"
+            }
+            else {
+                document.getElementById("selectors").style.display = "none"
+            }
+        }
+
+        function checkData() {
+            var flag = true
+            L = JSON.parse(localStorage.getItem("L"))
+            W = new Array(10);
+            structures = [];
+            coordinates = [];
+            customized = [];
+            var flag2=false
+            if (!L) {
+                alert("Reloading, if that keep happening, maybe you dont authorize to store data locally (localStorage Error)");
+                location.reload();
+            }
+            else {
+                var i = 0
+                L.forEach(function (el) {
+                    if (!Number(el.height)) {
+                        flag = false
+                    }
+                    W[-(i - 15) % 10] = Number(el.height)
+                    i++
+                })
+            }
+            for (let j = 0; j < 8; j++) {
+                var current = document.getElementById("s" + j).childNodes
+                var current0 = current[0].value;
+                console.log(current[0].selectedIndex)
+                if (current[0].selectedIndex==2 || current[0].selectedIndex==7){
+                    flag2=true
+                }
+                var current1 = Number(current[1].value);
+                var current2 = Number(current[2].value);
+                if ((!current1 || !current2) && j < 5) {
+                    flag = false;
+                }
+                structures.push([current0, current1, current2]);
+            }
+            for (let k = 0; k < 10; k++) {
+                var current = document.getElementById("c" + k).childNodes
+                var current0 = current[0].value;
+                var current1 = Number(current[1].value);
+                var current2 = Number(current[2].value);
+                if ((!current1 || !current2) && k < 4) {
+                    flag = false;
+                }
+                coordinates.push([current0, current1, current2]);
+            }
+            if (document.getElementById("customizedCase").checked) {
+                customized.push(Number(document.getElementById("riverSize").value));
+                customized.push(Number(document.getElementById("biomeSize").value));
+            }
+            else {
+                customized.push(4);
+                customized.push(4);
+            }
+            if (flag2){
+                let v=confirm('You have selected one or more igloo (or witch hut but its already safer), i wouldnt consider that safe, ofc if you know what you are doing, keep going... Continue?')
+                if (!v){
+                    alert("aborted Captain")
+                    return
+                }
+            }
+            if (flag) {
+                data = [W, structures, coordinates, customized];
+                localStorage.setItem("data", JSON.stringify(data));
+                document.getElementById("data").value = JSON.stringify(data);
+                document.getElementById("form").submit();
+            }
+            else {
+                alert("You didnt even completed the bare minimum!")
+            }
+        }
+
+        function sequenceUpdater(el) {
+            if (Number(el.value) > 103) {
+                alert("Use drag and drop, if you don't know the values")
+                el.value = ""
+            }
+            if (Number(el.value) > 75) {
+                indice = (el.value - 76) / 3
+                if (Math.round(indice) != indice) {
+                    alert("Only add 3*x from 76, if you don't know the values, use drag and drop")
+                    el.value = ""
+                }
+                else {
+                    if (document.getElementById("h" + (el.value - 76) / 3).parentElement.id == Number(document.getElementById("h" + (el.value - 76) / 3).parentElement.id)) {
+                        L = JSON.parse(localStorage.getItem("L"))
+                        if (L) {
+                            L[document.getElementById("h" + (el.value - 76) / 3).parentElement.id].height = 0
+                            document.getElementById("mySidenav0").appendChild(document.getElementById("h" + (el.value - 76) / 3))
+                            openNav(0)
+                            closeNav(0)
+                            localStorage.setItem("L", JSON.stringify(L));
+                        }
+                        else {
+                            alert("Localstorage Error, can't do much, activate it inside your browser")
+                        }
+                    }
+                    else {
+                        var i = 10
+                        while (i > 0 && document.getElementById((i + 5) % 10).childElementCount > 0) {
+                            i--
+                        }
+                        if (i == 0) {
+                            alert("fool me once, don't fool me twice")
+                        }
+                        else {
+                            L = JSON.parse(localStorage.getItem("L"))
+                            if (L) {
+                                L[(i + 5) % 10].height = el.value;
+                                localStorage.setItem("L", JSON.stringify(L));
+                                document.getElementById((i + 5) % 10).appendChild(document.getElementById("h" + (el.value - 76) / 3));
+                                openNav(0)
+                                closeNav(0)
+                            }
+                            else {
+                                alert("Localstorage Error, can't do much, activate it inside your browser")
+                            }
+                        }
+                    }
+                    el.value = ""
+                }
+            }
+            else {
+                if (Number(el.value) > 10) {
+                    alert("oupsie")
+                    el.value = ''
+                }
+            }
+        }
+
+        function addDraggable() {
+            for (let i = 0; i < 10; i++) {
+                let currentDiv = document.createElement("div")
+                currentDiv.id = "h" + i;
+                currentDiv.className = "height";
+                currentDiv.innerHTML = 76 + i * 3;
+                currentDiv.draggable = true
+                currentDiv.addEventListener("dragstart", drag);
+                document.getElementById("mySidenav0").appendChild(currentDiv)
+            }
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev, el) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var parentId = document.getElementById(data).parentNode.id
+            if (Number(parentId) == parentId && (parentId != el.id)) {
+                L = JSON.parse(localStorage.getItem("L"))
+                if (L) {
+                    L[parentId].height = 0;
+                    localStorage.setItem("L", JSON.stringify(L));
+                }
+            }
+            if (Number(el.id) == el.id) {
+                L = JSON.parse(localStorage.getItem("L"))
+                if (L) {
+                    L[el.id].height = document.getElementById(data).innerHTML;
+                    localStorage.setItem("L", JSON.stringify(L));
+                }
+            }
+            if (Number(el.id) == el.id && el.childElementCount > 0 && parentId != el.id) {
+                alert("stop it");
+                return 0;
+            }
+            el.appendChild(document.getElementById(data));
+        }
+
+        function mooveBoxes() {
+            if (localStorage.getItem("L")) {
+                L = JSON.parse(localStorage.getItem("L"));
+            }
+            else {
+                alert("Reloading, if that keep happening, maybe you dont authorize to store data locally (localStorage Error)");
+                location.reload();
+            }
+            var boxes = document.getElementsByClassName("boxes")
+            var i = 0;
+            [].forEach.call(boxes, function (el) {
+                var boxesData = L[i];
+                el.style.bottom = boxesData.posy + "px";
+                el.style.left = boxesData.posx + "px";
+                el.style.width = Math.min(this.innerHeight, this.innerWidth) / 14;
+                el.style.height = Math.min(this.innerHeight, this.innerWidth) / 14;
+                i++;
+            })
+            var all = document.getElementsByClassName("height");
+             [].forEach.call(all, function (el) {
+                //el.style.display = "block";
+                el.style.width = Math.min(this.innerHeight, this.innerWidth) / 16.2;
+                el.style.height = Math.min(this.innerHeight, this.innerWidth) / 16.2;
+                el.style.lineHeight = Math.min(this.innerHeight, this.innerWidth) / 400;
+            })
+        }
+
+        function setBoxes() {
+            if (localStorage.getItem("L")) {
+                L = JSON.parse(localStorage.getItem("L"));
+            }
+            else {
+                alert("Reloading, if that keep happening, maybe you dont authorize to store data locally (localStorage Error)");
+                location.reload();
+            }
+            var i = 0;
+            L.forEach(function (element) {
+                var currentDiv = document.createElement("div");
+                currentDiv.id = i;
+                currentDiv.addEventListener("dragover", allowDrop);
+                currentDiv.addEventListener("drop", function (event) {
+                    drop(event, this)
+                });
+                currentDiv.style.position = "fixed";
+                currentDiv.style.bottom = element.posy + "px";
+                currentDiv.style.left = element.posx + "px";
+                currentDiv.className = "boxes"
+                currentDiv.style.width = Math.min(this.innerHeight, this.innerWidth) / 14
+                currentDiv.style.height = Math.min(this.innerHeight, this.innerWidth) / 14
+                if (element.height != 0) {
+                    id = (element.height - 76) / 3;
+                    currentChild = document.getElementById("h" + id)
+                    currentChild.style.width = Math.min(this.innerHeight, this.innerWidth) / 16.2;
+                    currentChild.style.height = Math.min(this.innerHeight, this.innerWidth) / 16.2;
+                    currentChild.style.lineHeight = Math.min(this.innerHeight, this.innerWidth) / 400;
+                    var fragment = document.createDocumentFragment();
+                    fragment.appendChild(currentChild);
+                    currentDiv.appendChild(fragment);
+                }
+                document.getElementById("main").appendChild(currentDiv)
+                i++;
+            })
+        }
+
+        function calculatePos() {
+            //from bottom pillar clockwise, origin at bottom/left as usual
+            hardCodedValues = {
+                posx: [0.5, 0.34, 0.24, 0.24, 0.34, 0.5, 0.66, 0.76, 0.76, 0.66]
+                , posy: [0.78, 0.72, 0.58, 0.42, 0.28, 0.22, 0.28, 0.42, 0.58, 0.72]
+            };
+            //storage
+            L = [];
+            var flag = false;
+            if (localStorage.getItem("L")) {
+                W = JSON.parse(localStorage.getItem("L"));
+                flag = true;
+            }
+            else {
+                W = [];
+            }
+            //To be adaptative
+            var box = Math.min(window.innerHeight, window.innerWidth);
+            var x = box != window.innerWidth;
+            var delta = 0.04;
+            var deltay = 0;
+            var deltax = 0;
+            if (x) {
+                deltax += (window.innerWidth - box) / 2;
+            }
+            else {
+                deltay += (window.innerHeight - box) / 2;
+            }
+            var sequence = document.getElementById("seq")
+            sequence.style.top = 0.04 * box + deltay + "px";
+            sequence.style.left = (0.45 * box + deltax) + "px";
+            sequence.style.width = 0.1 * box + "px";
+            var text = document.getElementsByClassName("platform");
+            text[0].style.bottom = 0.06 * box + deltay + "px";
+            text[0].style.left = 0.51 * box + deltax + "px";
+            var arena = document.getElementById("arena");
+            arena.style.bottom = (0.375 * box + deltay - 8) + "px";
+            arena.style.left = (0.375 * box + deltax - 10) + "px";
+            arena.style.width = 0.25 * box;
+            arena.style.height = 0.25 * box;
+            for (i = 0; i < 2; i++) {
+                if (document.getElementById("mySidenav" + i).style.width != "") {
+                    document.getElementById("mySidenav" + i).style.width = this.innerWidth / 8 + i * 100 + 50 + "px";
+                }
+            }
+            //creation of the pillar yellow boxes
+            for (let i = 0; i < 10; i++) {
+                if (flag) {
+                    var data = W[i].height;
+                    if (!data) {
+                        data = 0;
+                    }
+                }
+                else {
+                    var data = 0;
+                }
+                L.push({
+                    posx: box * (hardCodedValues.posx[i] - delta) + deltax
+                    , posy: box * (hardCodedValues.posy[i] - delta) + deltay
+                    , height: data
+                });
+            }
+            localStorage.setItem("L", JSON.stringify(L));
+            //what method to choose from (todo)
+            if (document.getElementById(1)) {
+                mooveBoxes();
+            }
+            else {
+                setBoxes();
+            }
+        }
+
+        function start() {
+            var text = document.createElement("div")
+            text.className = "platform"
+            text.innerHTML = "Here is the platform"
+            document.getElementById("main").appendChild(text);
+            addDraggable();
+            addFields();
+            calculatePos();
+            document.getElementById("seq").addEventListener("keyup", function () {
+                sequenceUpdater(this)
+            });
+        }
+        window.onload = start;
+        window.addEventListener("resize", function () {
+            let x = document.documentElement;
+            x.style.display = 'none';
+            x.offsetHeight; //love this hackfix
+            x.style.display = 'block';
+            calculatePos()
+        })
+    </script>
+</head>
+
+<body> <span id="side0" style="font-size:30px;cursor:pointer;color: orangered;position: absolute;" onclick="openNav(0)">&#9776; Open heights</span> <span id="side1" style="font-size:30px;cursor:pointer;color: orangered;position: absolute;right: 0;" onclick="openNav(1)">&#9776; Open Structures</span>
+    <form style="display: none" action="Ressources\performance.html" id="form">
+        <input type="hidden" id="data" name="data" value="" /> </form>
+    <input id="seq" class="sequence">
+    <div id="main" style="background-color: #130d1a"> <img src="Ressources\endpillars.svg" alt="endpillars" class="modify"> </div>
+    <div id="arena" class="arena" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+    <div id="mySidenav0" class="sidenav" ondrop="drop(event,this)" ondragover="allowDrop(event)"> <a href="javascript:void(0)" class="closebtn" onclick="closeNav(0)">&times;</a> </div>
+    <div id="mySidenav1" class="sidenav2"> <a href="javascript:void(0)" class="closebtn2" onclick="closeNav(1)">&times;</a> </div>
+</body>
+
+</html>

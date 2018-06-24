@@ -1,0 +1,298 @@
+<html>
+
+<head>
+    <script src="https://cdn.rawgit.com/eligrey/Blob.js/0cef2746414269b16834878a8abc52eb9d53e6bd/Blob.js" ></script>
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            background-color: #130d1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: -moz-hidden-unscrollable;
+        }
+        @-moz-document url-prefix() { 
+        .main{
+            height: inherit; /*fucking mozilla*/
+            }}
+        .data {
+            border: 5px solid blue;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: bisque;
+            border-collapse: collapse;
+        }
+        
+        .perf {
+            border-collapse: collapse;
+            height: 40%;
+            border-radius: 5px;
+            padding: 10px;
+            border: 5px solid blue;
+            background-color: bisque;
+        }
+        
+        .slidecontainer {
+            width: 100%;
+            /* Width of the outside container */
+        }
+        /* The slider itself */
+        
+        .temp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid red;
+            top: 30px;
+            height: 50px;
+            position: relative;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            /* Override default CSS styles */
+            appearance: none;
+            width: 100%;
+            /* Full-width */
+            height: 25px;
+            /* Specified height */
+            background: #d3d3d3;
+            /* Grey background */
+            outline: none;
+            /* Remove outline */
+            opacity: 0.7;
+            /* Set transparency (for mouse-over effects on hover) */
+            -webkit-transition: .2s;
+            /* 0.2 seconds transition on hover */
+            transition: opacity .2s;
+        }
+        /* Mouse-over effects */
+        
+        .telecharger {
+            border-collapse: collapse;
+            height: 5%;
+            border-radius: 5px;
+            padding: 10px;
+            border: 5px solid blue;
+            background-color: bisque;
+            width: 20%;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            margin: auto;
+        }
+        
+        .slider:hover {
+            opacity: 1;
+            /* Fully shown on mouse-over */
+        }
+        /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            /* Override default look */
+            appearance: none;
+            width: 25px;
+            /* Set a specific slider handle width */
+            height: 25px;
+            /* Slider handle height */
+            background: #4CAF50;
+            /* Green background */
+            cursor: pointer;
+            /* Cursor on hover */
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 25px;
+            /* Set a specific slider handle width */
+            height: 25px;
+            /* Slider handle height */
+            background: #4CAF50;
+            /* Green background */
+            cursor: pointer;
+            /* Cursor on hover */
+        }
+        
+        .choose {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .checkmark {
+            position: relative;
+            height: 25px;
+            width: 25px;
+            background-color: #eee;
+            border-radius: 50%;
+        }
+        /* On mouse-over, add a grey background color */
+        
+        .container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+        /* When the radio button is checked, add a blue background */
+        
+        .container input:checked ~ .checkmark {
+            background-color: #2196F3;
+        }
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        /* Show the indicator (dot/circle) when checked */
+        
+        .container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        /* Style the indicator (dot/circle) */
+        
+        .container .checkmark:after {
+            border-radius: 50%;
+            background: white;
+        }
+    </style>
+    <script>
+        var L = []
+
+        function start() {
+            showData()
+            createPerf()
+            createDownload()
+        }
+
+        function processUser() {
+            var parameters = location.search.substring(1).split("&")
+            var temp = parameters[0].split("=");
+            l = unescape(temp[1]);
+            return l
+        }
+
+        function createPerf() {
+            var ram = navigator.deviceMemory;
+            var slider = document.getElementById("myRange");
+            var output = document.getElementById("show");
+            slider.value = ram * 1024;
+            output.innerHTML = "Ram that can be allocated (make sure that at least there is 150% of that quantity free at all time): " + slider.value + "MB"; // Display the default slider value
+            // Update the current slider value (each time you drag the slider handle)
+            slider.oninput = function () {
+                output.innerHTML = "Ram that can be allocated (make sure that at least there is 150% of that quantity free at all time): " + this.value + "MB";
+            }
+            cpu()
+        }
+
+        function createDownload() {
+            e = document.createElement("div")
+            e.className = "telecharger";
+            e.id = "download"
+            e.innerHTML = "Prepare Download"
+            e.addEventListener("click", gatherUp)
+            document.getElementById("main").appendChild(e)
+        }
+
+        function gatherUp() {
+            if (!L) {
+                L = showData()
+            }
+            var textFile = null;
+            makeTextFile = function (text) {
+                var data = new Blob([text], {
+                    type: 'text/plain'
+                });
+                // If we are replacing a previously generated file we need to
+                // manually revoke the object URL to avoid memory leaks.
+                if (textFile !== null) {
+                    window.URL.revokeObjectURL(textFile);
+                }
+                textFile = window.URL.createObjectURL(data);
+                return textFile;
+            };
+            data=JSON.stringify(L)+"\r"+document.getElementById("myRange").value+"\r"+document.getElementById("cores").value+"\r"+document.getElementById("dummy").checked
+            el = document.getElementById('download');
+            el.innerHTML = "<a id='link' download='data.txt' href=" + makeTextFile(data) + ">Download</a>";
+            localStorage.clear();
+            
+        }
+        
+
+        function cpu() {
+            if (document.getElementById("temp")) {
+                document.getElementById("temp").remove()
+            }
+            var cpus = navigator.hardwareConcurrency;
+            div = document.createElement("div")
+            div.className = "temp";
+            div.id = "temp"
+            div.innerHTML = 'You have  <input id="cores" type="number" name="quantity" min=1 max=64 required value=' + cpus + "> threads. Or you don't know:"
+            input = document.createElement("input");
+            input.type = "checkbox";
+            input.id="dummy"
+            div.append(input)
+            document.getElementById("perf").appendChild(div)
+        }
+
+        function gpu() {
+            alert("not available rn")
+            document.getElementById("cpu").checked=true
+            document.getElementById("gpu").checked=false
+            if (0){
+            if (document.getElementById("temp")) {
+                document.getElementById("temp").remove();
+            }
+            div = document.createElement("div")
+            div.className = "temp";
+            div.id = "temp"
+            div.innerHTML = 'You have  <input id="cores" type="number" name="quantity" min=256 max=10392 required value=1024 > cores. Or you don\'t know:'
+            input = document.createElement("input");
+            input.type = "checkbox";
+            div.append(input)
+            document.getElementById("perf").appendChild(div)}
+        }
+
+        function showData() {
+            L = JSON.parse(localStorage.getItem("data"))
+            if (!L) {
+                L = processUser()
+                if (L == "undefined") {
+                    alert("please go back, you have no data saved anywhere not in URL nor in localStorage")
+                    window.location = "main.html";
+                }
+                L = JSON.parse(L)
+            }
+            document.getElementById('data').innerHTML = JSON.stringify(L)
+            return L
+        }
+        window.onload = start;
+    </script>
+</head>
+
+<body>
+    <div id="main" class="main">
+        <div class="data">Data:
+            <div id="data"></div>
+        </div>
+        <div id="perf" class="perf">
+            <div class="slidecontainer">
+                <div id="show"></div>
+                <input class="slider" type="range" min="256" max="16384" value="1024" class="slider" id="myRange" step="256"> </div>
+            <div class="choose">
+                <label class="container">
+                    <input class="checkmark" type="radio" id="cpu" name="core" value="cpu" checked="checked" onclick="cpu()"> Use cpu multiprocessing only</label>
+                <label class="container">
+                    <input class="checkmark" type="radio" id="gpu" name="core" value="gpu" onclick="gpu()"> Use gpu parallelization only</label>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
