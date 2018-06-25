@@ -217,7 +217,13 @@
                 textFile = window.URL.createObjectURL(data);
                 return textFile;
             };
-            data=JSON.stringify(L)+"\r"+document.getElementById("myRange").value+"\r"+document.getElementById("cores").value+"\r"+document.getElementById("dummy").checked
+            if(document.getElementById("dummy").checked){
+                ok="True"
+            }
+            else{
+                ok="False"
+            }
+            data=JSON.stringify(L)+"\r"+document.getElementById("myRange").value+"\r"+document.getElementById("cores").value+"\r"+ok
             el = document.getElementById('download');
             el.innerHTML = "<a id='link' download='data.txt' href=" + makeTextFile(data) + ">Download</a>";
             localStorage.clear();

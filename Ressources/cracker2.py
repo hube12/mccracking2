@@ -1,5 +1,7 @@
-import functools, time, itertools, multiprocessing, multiprocessing.pool, sys
+import functools, time, itertools, multiprocessing, multiprocessing.pool, sys, os
 from psutil import virtual_memory
+import genLayer as gL
+
 
 class NoDaemonProcess(multiprocessing.Process):
     def _get_daemon(self):
@@ -22,6 +24,7 @@ def next(seed):
         retval -= (1 << 32)
     return retval, seed
 
+
 def nextInt(n, seed, count, flag):
     l = []
     if flag:
@@ -40,11 +43,13 @@ def nextInt(n, seed, count, flag):
             l.append(val)
     return l, seed
 
+
 def shuffle(l, seed):
     for i in range(len(l), 1, -1):
         j, seed = nextInt(i, seed, 1, i == len(l))
         l[i - 1], l[j[0]] = l[j[0]], l[i - 1]
     return l
+
 
 def get_all_possible_end_pillar_configuration_fast(seed, currentPillar):
     interval, i, flag = shuffle(list(range(10)), seed), 0, True
@@ -54,6 +59,7 @@ def get_all_possible_end_pillar_configuration_fast(seed, currentPillar):
         i += 1
     return seed if flag else -1
 
+
 def goBack(seed, pillar):
     currentSeed = (seed << 16 & 0xFFFF00000000) | (pillar << 16) | (seed & 0xFFFF)
     currentSeed = ((currentSeed - 0xb) * 0xdfe05bcb1365) & 0xffffffffffff
@@ -61,22 +67,23 @@ def goBack(seed, pillar):
     currentSeed ^= 0x5DEECE66D
     return currentSeed
 
+
 def canSpawnStruct(params):
     seed, pillar, indice = params
     global liste
     chunkX, chunkZ, incompleteRand, modulus, typeStruct = liste[indice]
-    currentSeed = goBack(seed, pillar)+incompleteRand
+    currentSeed = goBack(seed, pillar)
     if typeStruct == "s":
-        l = nextInt(24, currentSeed, 2, True)[0]
+        l = nextInt(24, currentSeed + incompleteRand, 2, True)[0]
         k, m = l[0], l[1]
     elif typeStruct == "e":
-        l = nextInt(9, currentSeed, 4, True)[0]
+        l = nextInt(9, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     elif typeStruct == "o":
-        l = nextInt(27, currentSeed, 4, True)[0]
+        l = nextInt(27, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     else:
-        l = nextInt(60, currentSeed, 4, True)[0]
+        l = nextInt(60, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
         if indice > 4:
@@ -88,26 +95,26 @@ def canSpawnStruct(params):
     else:
         return -1
 
-def data(structureType):
+
+def datas(structureType):
     t = structureType.lower()
     if t == "m":
-        uniquifier,modulus = "10387319",80
-    elif t == "e" :
-        uniquifier,modulus  = "10387313",20
+        uniquifier, modulus = "10387319", 80
+    elif t == "e":
+        uniquifier, modulus = "10387313", 20
     elif t == "o":
-        uniquifier,modulus  = "10387313",32
-    elif t=='v':
+        uniquifier, modulus = "10387313", 32
+    elif t == 'v':
         uniquifier, modulus = "10387312", 32
     else:
-        uniquifier,modulus  = "14357617",32
-    return uniquifier,modulus
+        uniquifier, modulus = "14357617", 32
+    return uniquifier, modulus
+
 
 def test(chunkX, chunkZ, uniquifier, seed, modulus, typeStruct):
-
-
     currentSeed = (chunkX) // modulus * 341873128712 + (chunkZ) // modulus * 132897987541 + seed + uniquifier
 
-    if typeStruct == "s" or typeStruct=="v":
+    if typeStruct == "s" or typeStruct == "v":
         l = nextInt(24, currentSeed, 2, True)[0]
         k, m = l[0], l[1]
     elif typeStruct == "e":
@@ -120,38 +127,43 @@ def test(chunkX, chunkZ, uniquifier, seed, modulus, typeStruct):
         l = nextInt(60, currentSeed, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
-        #print(str(seed)+ " is ok with that structure")
+        # print(str(seed)+ " is ok with that structure")
         return True
-    #print("Not correct")
+    # print("Not correct")
     return False
+
 
 def getdata(*args):
     global liste
     liste = [x for x in args]
 
+
 def convert(data):
     l = []
     for e in data:
-        uniquifier, modulus = e[0].split(",")
-        if uniquifier == "10387319":
+        uniquifier, modulus = map(int, e[0].split(","))
+        if uniquifier == 10387319:
             t = "m"
-        elif uniquifier == "10387313" and modulus == 20:
+        elif uniquifier == 10387313 and modulus == 20:
             t = "e"
-        elif uniquifier == "10387313":
+        elif uniquifier == 10387313:
             t = "o"
         else:
             t = "s"
-        l.append((e[1], e[2], e[1] // modulus * 341873128712 + e[2] // modulus * 132897987541 + int(uniquifier), int(modulus), t))
+        l.append((e[1], e[2], e[1] // modulus * 341873128712 + e[2] // modulus * 132897987541 + uniquifier, modulus, t))
 
     return l
-def ram():
-    return virtual_memory().total/1024/1024//4
+
+
+def rams():
+    return virtual_memory().total / 1024 / 1024 // 4
+
 
 def main(datapack, ram, core, ok):
     dataPillar = datapack[0]
     data = datapack[1]
-    coordinates=datapack[2]
-    biome=datapack[3]
+    coordinates = datapack[2]
+    biome = datapack[3]
     if sys.platform.startswith('win'):
         multiprocessing.freeze_support()
     towerTime = time.time()
@@ -160,12 +172,12 @@ def main(datapack, ram, core, ok):
                                    currentPillar=dataPillar)
         results = pool.map(couple, range(65536))
         towerNumber = [p for p in results if p != -1]
-    print("Looking for the tower number took: " + time.time() - towerTime)
-    print("The EndPillarSeed found is: " + towerNumber)
+    print("Looking for the tower number took: " + str(time.time() - towerTime) + "s")
+    print("The EndPillarSeed found is: " + str(towerNumber))
     data = convert(data)
-    print("You can look one last time at your data before i make confetti of it: " + data)
-    if not ok:
-        ram=ram()
+    print("You can look one last time at your data before i make confetti of it: " + str(data))
+    if ok:
+        ram = rams()
 
     if ram > 6000:
         mem = 26
@@ -175,53 +187,82 @@ def main(datapack, ram, core, ok):
         mem = 23
     else:
         mem = 22
-    print(ram,mem)
+    print(ram, mem)
+    mem = 22
     fullResults = []
+    lastResult = []
     chunksize = 1 << mem
     for roll in range(2 ** (32 - mem)):
         t = time.time()
         with MyPool(processes=core if ok else None, initializer=getdata, initargs=data) as pool:
             paramlist = itertools.product(range(chunksize * roll, chunksize * (roll + 1)), towerNumber, [0])
-            results = pool.imap_unordered(canSpawnEndCity, paramlist, 1000)
+            results = pool.imap_unordered(canSpawnStruct, paramlist, 1000)
             fullResults.extend([p for p in results if p != -1])
-        flagContinue=True
+        flagContinue = True
         if not roll:
             tempo = time.time() - t
-            print("First roll took: " + tempo + " expected time for the whole thing " + (2 ** (32 - mem)) * tempo / 60 + " min")
+            print("First roll took: " + str(tempo) + " expected time for the whole thing " + str(
+                (2 ** (32 - mem)) * tempo / 60) + " min")
 
         if len(fullResults):
             print(fullResults)
-            print("i have found one or more possible structure seeds, would you be kind to provide me another structure before i continue so i can reduce computation time? Y/N")
-            response=input().lower()
-            if response in ["no","n","0","nope","i will not",'ney',"nah","uh-uh","non","nix","nay","no way","negative","go fish"]:
+            print(
+                "i have found one or more possible structure seeds, would you be kind to provide me another structure before i continue so i can reduce computation time? Y/N")
+            response = input().lower()
+            if response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non", "nix", "nay", "no way",
+                            "negative", "go fish"]:
                 print("Beginning layer calculation, gonna take a while...")
             else:
-                print("Enter chunkX,chunkZ")
-                chunkX, chunkZ = map(int, input().split(","))
-                print( "Enter Structure Type: o for ocean monument, e for end cities, m for mansion, v for village, s for all the rest (witch hut, igloo, desert temple, jungle temple)")
+                try:
+                    print("Enter chunkX,chunkZ")
+                    chunkX, chunkZ = map(int, input().split(","))
+                except ValueError:
+                    print("Come on, Enter chunkX,chunkZ with numbers")
+                    chunkX, chunkZ = input().split(",")
+                    while not chunkX == int(chunkX) and chunkZ == int(chunkZ):
+                        print("Come on, Enter chunkX,chunkZ with numbers")
+                        chunkX, chunkZ = input().split(",")
+                    chunkZ, chunkX = int(chunkZ), int(chunkX)
+
+                print(
+                    "Enter Structure Type: o for ocean monument, e for end cities, m for mansion, v for village, s for all the rest (witch hut, igloo, desert temple, jungle temple)")
                 structureType = input()
-                while not(structureType in ["m","e","s","o","v"]):
+                while not (structureType in ["m", "e", "s", "o", "v", "M", "E", "S", "O", "V"]):
                     print(
                         "Are you kidding me? Enter Structure Type: o for ocean monument, e for end cities, m for mansion, v for village, s for all the rest (witch hut, igloo, desert temple, jungle temple) only")
                     structureType = input()
-                uniquifier,modulus=data(structureType)
+                uniquifier, modulus = datas(structureType)
+                flagElim = False
                 for seeds in fullResults:
-                    if not test(chunkX,chunkZ,uniquifier,seeds,modulus,typeStruct):
-                        print("i eliminated a Seed, well done ",seeds)
+                    if not test(chunkX, chunkZ, int(uniquifier), seeds, modulus, structureType):
+                        print("I eliminated a Seed, well done ", seeds)
+                        flagElim = True
                         fullResults.remove(seeds)
+                if not flagElim:
+                    print(
+                        "I did not eliminate a Seed, i will assume that this one is a good one and start cracking the last 16bit, its most likely your desired structure seed, these next calculation could take a while...")
                 if not len(fullResults):
                     print("Too bad, i cant pin down for now, i will catch you later")
-                    flagContinue=False
+                    flagContinue = False
             if flagContinue:
-                with MyPool(processes=core if ok else None, initializer=getdata, initargs=data) as pool:
-                    couple = functools.partial(generate, data=[coordinates, 0, seed, biome])
-                    results = pool.imap_unordered(couple, range((1 << 16) - 1), 1000)
-                    # in generate seed|iter<<48 seed=data[2]
+                for structureSeed in fullResults:
+                    for i in range((1 << 8) - 1):
+                        with MyPool(processes=core if ok else None, initializer=getdata, initargs=data) as pool:
+                            couple = functools.partial(gL.generate, data=[coordinates, 0, structureSeed, biome])
+                            resultss = pool.imap_unordered(couple, range(i * ((1 << 8) - 1), ((1 << 8) - 1) * (i + 1)))
+                            lastResult.extend([p for p in resultss if p != -1])
+                        if len(lastResult) == 1:
+                            print("Here is your seed, it match everything, hope you are happy", lastResult)
+
+                            os.system("pause")
+                        else:
+                            print("multiple seed", lastResult)
 
     print(fullResults)
 
+
 if __name__ == '__main__':
-    main()
+    multiprocessing.freeze_support()
 
 """ Memory usage
 power of 2 | usage in MB

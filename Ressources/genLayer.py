@@ -2,7 +2,6 @@ import numpy as np
 from collections import Counter
 from copy import deepcopy
 
-
 class Main:
     def __init__(self, seed=None):
         if seed:
@@ -19,16 +18,18 @@ class Main:
         return ((val + (1 << 63)) % (1 << 64)) - (1 << 63)
 
     def initChunkSeed(self, chunk):
-        self.chunkSeed = self.worldGenSeed
-        self.chunkSeed *= (self.chunkSeed * 6364136223846793005 + 1442695040888963407)
-        self.chunkSeed += chunk[0]
-        self.chunkSeed *= (self.chunkSeed * 6364136223846793005 + 1442695040888963407)
-        self.chunkSeed += chunk[1]
-        self.chunkSeed *= (self.chunkSeed * 6364136223846793005 + 1442695040888963407)
-        self.chunkSeed += chunk[0]
-        self.chunkSeed *= (self.chunkSeed * 6364136223846793005 + 1442695040888963407)
-        self.chunkSeed += chunk[1]
-        self.chunkSeed=self.javaInt64(self.chunkSeed)
+        chunkSeed = self.worldGenSeed
+        chunkSeed *= (chunkSeed * 6364136223846793005 + 1442695040888963407)
+        chunkSeed += chunk[0]
+        chunkSeed *= (chunkSeed * 6364136223846793005 + 1442695040888963407)
+        chunkSeed += chunk[1]
+        chunkSeed = self.javaInt64(chunkSeed)
+        chunkSeed *= (chunkSeed * 6364136223846793005 + 1442695040888963407)
+        chunkSeed += chunk[0]
+        chunkSeed *= (chunkSeed * 6364136223846793005 + 1442695040888963407)
+        chunkSeed += chunk[1]
+
+        self.chunkSeed = self.javaInt64(chunkSeed)
 
     def countIt(self, array):
         dic = Counter(array)
@@ -43,6 +44,7 @@ class Main:
         self.worldGenSeed *= self.worldGenSeed * 6364136223846793005 + 1442695040888963407
         self.worldGenSeed += self.baseSeed
         self.worldGenSeed *= self.worldGenSeed * 6364136223846793005 + 1442695040888963407
+        self.worldGenSeed = self.javaInt64(self.worldGenSeed)
         self.worldGenSeed += self.baseSeed
         self.worldGenSeed *= self.worldGenSeed * 6364136223846793005 + 1442695040888963407
         self.worldGenSeed += self.baseSeed
@@ -65,9 +67,9 @@ class Main:
 
         # first stack from 1:4096 to 1:256
         initialLayer = g1.GenLayerIsland(1)
-        firstLayer = g4.GenLayerZoom(2000, initialLayer, 1, 1,1)
+        firstLayer = g4.GenLayerZoom(2000, initialLayer, 1, 1, 1)
         secondLayer = g3.GenLayerAddIsland(1, firstLayer, 1)
-        thirdLayer = g4.GenLayerZoom(2001, secondLayer, 0, 1,1)
+        thirdLayer = g4.GenLayerZoom(2001, secondLayer, 0, 1, 1)
         genlayeraddisland1 = g3.GenLayerAddIsland(2, thirdLayer, 1)
         genlayeraddisland1 = g3.GenLayerAddIsland(50, genlayeraddisland1, 1)
         genlayeraddisland1 = g3.GenLayerAddIsland(70, genlayeraddisland1, 1)
@@ -77,8 +79,8 @@ class Main:
         genlayeredge = g7.GenLayerEdge(2, genlayeraddisland2, "COOL_WARM", 1)
         genlayeredge = g7.GenLayerEdge(2, genlayeredge, "HEAT_ICE", 1)
         genlayeredge = g7.GenLayerEdge(3, genlayeredge, "SPECIAL", 1)
-        genlayerzoom1 = g4.GenLayerZoom(2002, genlayeredge, 0, 1,1)
-        genlayerzoom1 = g4.GenLayerZoom(2003, genlayerzoom1, 0, 1,1)
+        genlayerzoom1 = g4.GenLayerZoom(2002, genlayeredge, 0, 1, 1)
+        genlayerzoom1 = g4.GenLayerZoom(2003, genlayerzoom1, 0, 1, 1)
         genlayeraddisland3 = g3.GenLayerAddIsland(4, genlayerzoom1, 1)
         genlayeraddmushroomisland = g8.GenLayerAddMushroomIsland(5, genlayeraddisland3, 1)
         genlayerdeepocean = g9.GenLayerDeepOcean(4, genlayeraddmushroomisland, 1)
@@ -96,21 +98,19 @@ class Main:
 
         # starting biome stack
         lvt81 = g11.GenLayerBiome(200, genlayerdeepocean, customized, 0)  # 19
-        genlayer6 = g4.GenLayerZoom.magnify(1000, lvt81, 2, 0, 1,1)  # 20 and 21
+        genlayer6 = g4.GenLayerZoom.magnify(1000, lvt81, 2, 0, 1, 1)  # 20 and 21
         genlayerbiomeedge = g12.GenLayerBiomeEdge(1000, genlayer6, 1)  # 22
         # end Biome stack
 
         # starting river stack
         genlayerriverinit = g10.GenLayerRiverInit(100, lvt71, 0)  # 23
-        lvt91 = g4.GenLayerZoom.magnify(1000, genlayerriverinit, 2, 0, 1,0)  # 24 and 25
+        lvt91 = g4.GenLayerZoom.magnify(1000, genlayerriverinit, 2, 0, 1, 0)  # 24 and 25
         # merge point
-        genlayerriver = deepcopy(lvt91)  # copy of 25 aka 36
-
         # merging and starting hills/rare/shore/smooth chain
         genlayerhills = g13.GenLayerHills(1000, genlayerbiomeedge, lvt91, 1)
         genlayerhills = g16.GenLayerRareBiome(1001, genlayerhills, 1)
         for k in range(i):
-            genlayerhills = g4.GenLayerZoom(1000 + k, genlayerhills, 0, 1,1)
+            genlayerhills = g4.GenLayerZoom(1000 + k, genlayerhills, 0, 1, 1)
             if not k:
                 genlayerhills = g3.GenLayerAddIsland(3, genlayerhills, 1)
             if k == 1 or i == 1:
@@ -119,12 +119,11 @@ class Main:
         # end of biome chain
 
         #finishing river
-        genpreriver=g4.GenLayerZoom.magnify(1000, genlayerriverinit, 2, 0, 1,1)
-        genlayer5 = g4.GenLayerZoom.magnify(1000, genpreriver, j, 0, 1,1)  # 37,38,39,40
+        genpreriver = g4.GenLayerZoom.magnify(1000, genlayerriverinit, 2, 0, 1, 1)
+        genlayer5 = g4.GenLayerZoom.magnify(1000, genpreriver, j, 0, 1, 1)  # 37,38,39,40
         genlayerriver = g14.GenLayerRiver(1, genlayer5, 1)
         genlayersmooth = g15.GenLayerSmooth(1000, genlayerriver, 1)  # 42
         # end river
-
 
         # merging river with biome
         genlayerrivermix = g18.GenLayerRiverMix(100, genlayersmooth1, genlayersmooth, 1)
@@ -134,17 +133,6 @@ class Main:
         genlayer3.initWorldSeed(seed)
 
         return [genlayerrivermix, genlayer3, genlayerrivermix][1]
-
-    def matchBiomes(self, master, indice, customized):
-        seed,biomeId, px, pz = master[indice]
-
-        genlayerFinal = self.genlayer(seed, customized)
-        l=genlayerFinal.getInts(px, pz, 1,1)
-
-        if biomeId==l[0]:
-            return True
-        print(l,master[indice])
-        return False
 
     def isBiomeOceanic(self, biomeID):
         return biomeID in [24, 10, 0]
@@ -269,10 +257,29 @@ import GenLayerRareBiome as g16
 import GenLayerShore as g17
 import GenLayerRiverMix as g18
 import GenLayerVoronoiZoom as g19
-import time
+import time, timeit
 
-if __name__ == "__main__":
-    m = Main()
-    customized = [1, "", "", [""]]
-    l=[(5,16,24,247)]
-    print(m.matchBiomes(l,0,customized))
+def recursiveCall(layer,l,i):
+    t=int(layer.getInts(l[i][1],l[i][2],1,1))
+    print(t)
+    if int(layer.getInts(l[i][1],l[i][2],1,1))==int(l[i][0]):
+        print("e",i)
+        if i==len(l)-1:
+            return True
+        return recursiveCall(layer,l,i+1)
+    return False
+
+
+def generate(seedmaj,data):
+    coordinates,indice,seed,biome=data
+    globalseed=seed|(seedmaj<<48)
+    print(globalseed)
+    customized=0 if biome==[4,4] else 1 if biome==[6,4] else 2
+
+    c=[customized,biome[0],biome[1],""]
+    print(c)
+    m=Main()
+    genlayerFinal = m.genlayer(globalseed, c)
+    if recursiveCall(genlayerFinal,coordinates,indice):
+        return globalseed
+    return -1

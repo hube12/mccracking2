@@ -1,5 +1,6 @@
-import os,ast
-import Ressources.cracker2 as c
+import os,ast,sys
+sys.path.append("Ressources")
+import cracker2 as c
 def main():
     try:
         text=open("data.txt","r")
@@ -13,9 +14,9 @@ def main():
     ram=int(text.readline())
     core=int(text.readline())
     ok=ast.literal_eval(text.readline())
-    c.main([94,103,97,100,88,82,76,85,79,91],8000,12,False)
+    c.main(dataPack,ram,core,ok)
 
 
 
-
-main()
+if __name__ == '__main__':
+    main()

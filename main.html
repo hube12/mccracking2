@@ -453,7 +453,7 @@
             for (let j = 0; j < 8; j++) {
                 var current = document.getElementById("s" + j).childNodes
                 var current0 = current[0].value;
-                console.log(current[0].selectedIndex)
+                
                 if (current[0].selectedIndex==2 || current[0].selectedIndex==7){
                     flag2=true
                 }
@@ -462,7 +462,10 @@
                 if ((!current1 || !current2) && j < 5) {
                     flag = false;
                 }
-                structures.push([current0, current1, current2]);
+                if (current1 && current2){
+                    structures.push([current0, current1, current2]);
+                }
+                
             }
             for (let k = 0; k < 10; k++) {
                 var current = document.getElementById("c" + k).childNodes
@@ -472,7 +475,8 @@
                 if ((!current1 || !current2) && k < 4) {
                     flag = false;
                 }
-                coordinates.push([current0, current1, current2]);
+                if (current1 && current2){
+                coordinates.push([current0, current1, current2]);}
             }
             if (document.getElementById("customizedCase").checked) {
                 customized.push(Number(document.getElementById("riverSize").value));
