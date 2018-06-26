@@ -87,8 +87,8 @@ def canSpawnStruct(params):
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
         if indice > 4:	
--            print(	
--                "In case you want to shut down, copy this number somewhere: it is likely to be a good one \n" + str(currentSeed) +" You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
+            print(
+                "In case you want to shut down, copy this number somewhere: it is likely to be a good one \n" + str(currentSeed) +" You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
         if indice == len(liste) - 1:
             return currentSeed
         return canSpawnStruct((seed, pillar, indice + 1))
@@ -184,7 +184,7 @@ def main(datapack, ram, core, ok):
                                    currentPillar=dataPillar)
         results = pool.map(couple, range(65536))
         towerNumber = [p for p in results if p != -1]
-    print("Looking for the tower number took: " + str(time.time() - towerTime) + "s")
+    print("Looking for the tower number took: " + str(round(time.time() - towerTime,3)) + "s")
     print("The EndPillarSeed found is: " + str(towerNumber))
     data = convert(data)
     print("You can look one last time at your data before i make confetti of it: " + str(data))
@@ -213,9 +213,12 @@ def main(datapack, ram, core, ok):
         flagContinue = True
         if not roll:
             tempo = time.time() - t
-            print("First roll took: " + str(tempo) + " expected time for the whole thing " + str(
-                (2 ** (32 - mem)) * tempo / 60) + " min")
-        print("We are on roll ",roll,"which represent ", roll/(2 ** (32 - mem))*100, "%","It took: ",time.time() - t," seconds")
+            print("First roll took: " + str(round(tempo)) + "seconds expected time for the whole thing " + str(round(
+                (2 ** (32 - mem)) * tempo / 60*1.2)) + " min")
+        else:
+            sys.stdout.write('\r')
+            sys.stdout.write("[%-100s] %d%%" % ('=' * round(roll/(2 ** (32 - mem))*100), roll/(2 ** (32 - mem))*100))
+            sys.stdout.flush()
         if len(fullResults):
             if not flagAuto:
                 print("Structure Seed", fullResults[0])
