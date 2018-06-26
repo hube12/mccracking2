@@ -1,3 +1,4 @@
+from __future__ import print_function
 import functools, time, itertools, multiprocessing, multiprocessing.pool, sys, os
 from psutil import virtual_memory
 import genLayer as gL
@@ -86,7 +87,8 @@ def canSpawnStruct(params):
         l = nextInt(60, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
-        if indice > 4:	
+        if indice > 3:
+            print()
             print(
                 "In case you want to shut down, copy this number somewhere: it is likely to be a good one \n" + str(currentSeed) +" You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
         if indice == len(liste) - 1:
@@ -216,16 +218,22 @@ def main(datapack, ram, core, ok):
             print("First roll took: " + str(round(tempo)) + "seconds expected time for the whole thing " + str(round(
                 (2 ** (32 - mem)) * tempo / 60*1.2)) + " min")
         else:
-            sys.stdout.write('\r')
-            sys.stdout.write("[%-100s] %d%%" % ('=' * round(roll/(2 ** (32 - mem))*100), roll/(2 ** (32 - mem))*100))
-            sys.stdout.flush()
+
+            print("[%-50s] %d%% \r" % ('=' * round(roll / (2 ** (32 - mem + 1)) * 100), roll / (2 ** (32 - mem)) * 100),
+                  end='', flush=True)
+            print('\x08' * 58, end="", flush=True)
+            #print('\x08' * round(roll / (2 ** (32 - mem + 1)) * 100) + " " + str(round(roll / (2 ** (32 - mem)) * 100, 2)) + "%", end=' ', flush=True)
+            #sys.stdout.write("[%-100s] %d%% \r" % ('=' * round(roll/(2 ** (32 - mem))*100), roll/(2 ** (32 - mem))*100))
+            #sys.stdout.flush()
         if len(fullResults):
             if not flagAuto:
+                print()
                 print("Structure Seed", fullResults[0])
                 print(
                     "i have found one or more possible structure seeds,\n would you be kind to provide me another structure before i continue so i can reduce computation time? Y/N")
                 response = input().lower()
             else:
+                print()
                 print("Structure Seed(s)", fullResults[0])
 
                 response="n"
