@@ -86,9 +86,6 @@ def canSpawnStruct(params):
         l = nextInt(60, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
-        if indice > 4:
-            print(
-                "In case you want to shut down, copy this number somewhere: it is likely to be a good one" + str(currentSeed))
         if indice == len(liste) - 1:
             return currentSeed
         return canSpawnStruct((seed, pillar, indice + 1))
@@ -199,7 +196,7 @@ def main(datapack, ram, core, ok):
         mem = 23
     else:
         mem = 22
-    fullResults = [52242615448320]
+    fullResults = []
     lastResult = []
     chunksize = 1 << mem
 
@@ -211,7 +208,6 @@ def main(datapack, ram, core, ok):
             results = pool.imap_unordered(canSpawnStruct, paramlist, 1000)
             fullResults.extend([p for p in results if p != -1])
         flagContinue = True
-        print(time.time() - t,roll)
         if not roll:
             tempo = time.time() - t
             print("First roll took: " + str(tempo) + " expected time for the whole thing " + str(
@@ -262,6 +258,7 @@ def main(datapack, ram, core, ok):
                 if not len(fullResults):
                     print("Too bad, i cant pin down for now, i will catch you later")
                     flagContinue = False
+            temporaire=[]
             if flagContinue:
                 for structureSeed in fullResults:
                     for i in range((1 << 8) - 1):
@@ -312,8 +309,17 @@ def main(datapack, ram, core, ok):
                                         sys.exit()
                             else:
                                 print('Multiples Full Seed found',lastResult)
+                    if len(lastResult)==0:
+                        print("Layer inspection revealed that this seed is most likely not a structure seed, which could be totally wrong, i recommend you to send me this seed + your data.txt on discord: Neil #4879, i will run", structureSeed)
+                        temporaire.append(structureSeed)
+                for seedss in temporaire:
+                    fullResults.remove(seedss)
+
+
+
 
     print("Calculation done, here the seed(s)", lastResult)
+    os.system("pause")
 
 
 if __name__ == '__main__':
