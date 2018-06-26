@@ -257,28 +257,26 @@ import GenLayerRareBiome as g16
 import GenLayerShore as g17
 import GenLayerRiverMix as g18
 import GenLayerVoronoiZoom as g19
-import time, timeit
+
 
 def recursiveCall(layer,l,i):
     t=int(layer.getInts(l[i][1],l[i][2],1,1))
-    print(t)
     if int(layer.getInts(l[i][1],l[i][2],1,1))==int(l[i][0]):
-        print("e",i)
+        if i>2:
+            return True
         if i==len(l)-1:
+
             return True
         return recursiveCall(layer,l,i+1)
     return False
 
 
 def generate(seedmaj,data):
+    m = Main()
     coordinates,indice,seed,biome=data
-    globalseed=seed|(seedmaj<<48)
-    print(globalseed)
+    globalseed=m.javaInt64(seed|(seedmaj<<48))
     customized=0 if biome==[4,4] else 1 if biome==[6,4] else 2
-
     c=[customized,biome[0],biome[1],""]
-    print(c)
-    m=Main()
     genlayerFinal = m.genlayer(globalseed, c)
     if recursiveCall(genlayerFinal,coordinates,indice):
         return globalseed

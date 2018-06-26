@@ -88,7 +88,7 @@ def canSpawnStruct(params):
     if chunkX % modulus == k and m == chunkZ % modulus:
         if indice > 4:
             print(
-                    "In case you want to shut down, copy this number somewhere: it is likely to be a good one" + currentSeed)
+                "In case you want to shut down, copy this number somewhere: it is likely to be a good one" + str(currentSeed))
         if indice == len(liste) - 1:
             return currentSeed
         return canSpawnStruct((seed, pillar, indice + 1))
@@ -160,6 +160,18 @@ def rams():
 
 
 def main(datapack, ram, core, ok):
+    flagAuto = 0
+    print("######HELLO######")
+    print(
+        "Y/N: Do you want autorun mode or will you be here to provide me more data if needed? Y for auto run, N for step assist \n"
+        " (Note: Autorun is ok if you have to go somewhere and let the computer do the job but you could have multiple results, \n "
+        "Step-assist will likely reduce iteration as it will stop once it found a suitable seed, however it may need data at some \n "
+        "point so it isn't automatic)")
+    response = input().lower()
+    if not (response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non",
+                         "nix",
+                         "nay", "no way", "go fish"]):
+        flagAuto = 1
     dataPillar = datapack[0]
     data = datapack[1]
     coordinates = datapack[2]
@@ -187,29 +199,35 @@ def main(datapack, ram, core, ok):
         mem = 23
     else:
         mem = 22
-    print(ram, mem)
-    mem = 22
-    fullResults = []
+    fullResults = [52242615448320]
     lastResult = []
     chunksize = 1 << mem
+
     for roll in range(2 ** (32 - mem)):
         t = time.time()
+
         with MyPool(processes=core if ok else None, initializer=getdata, initargs=data) as pool:
             paramlist = itertools.product(range(chunksize * roll, chunksize * (roll + 1)), towerNumber, [0])
             results = pool.imap_unordered(canSpawnStruct, paramlist, 1000)
             fullResults.extend([p for p in results if p != -1])
         flagContinue = True
+        print(time.time() - t,roll)
         if not roll:
             tempo = time.time() - t
             print("First roll took: " + str(tempo) + " expected time for the whole thing " + str(
                 (2 ** (32 - mem)) * tempo / 60) + " min")
 
         if len(fullResults):
-            print(fullResults)
-            print(
-                "i have found one or more possible structure seeds, would you be kind to provide me another structure before i continue so i can reduce computation time? Y/N")
-            response = input().lower()
-            if response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non", "nix", "nay", "no way",
+            if not flagAuto:
+                print("Structure Seed", fullResults[0])
+                print(
+                    "i have found one or more possible structure seeds,\n would you be kind to provide me another structure before i continue so i can reduce computation time? Y/N")
+                response = input().lower()
+            else:
+                print("Structure Seed(s)", fullResults[0])
+
+                response="n"
+            if response in ["N","no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non", "nix", "nay", "no way",
                             "negative", "go fish"]:
                 print("Beginning layer calculation, gonna take a while...")
             else:
@@ -252,13 +270,50 @@ def main(datapack, ram, core, ok):
                             resultss = pool.imap_unordered(couple, range(i * ((1 << 8) - 1), ((1 << 8) - 1) * (i + 1)))
                             lastResult.extend([p for p in resultss if p != -1])
                         if len(lastResult) == 1:
-                            print("Here is your seed, it match everything, hope you are happy", lastResult)
+                            print("Here is your seed, it match everything, hope you are happy", lastResult[0])
+                            if not flagAuto:
+                                os.system("pause")
+                                print("Quit? Y/N")
+                                response = input().lower()
+                            else:
+                                response="n"
+                            if not (response in ["N",
+                                                 "no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non",
+                                                 "nix",
+                                                 "nay", "no way", "go fish"]):
+                                sys.exit()
+                        elif len(lastResult) != 0:
+                            if not flagAuto:
+                                i = 0
+                                while len(lastResult) > 1:
+                                    print("multiple seed", lastResult)
+                                    print(
+                                        "i will ask you for coordinateX , coordinateZ , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
+                                    x, z, id = input().split()
+                                    while not (x == int(x) and z == int(z) and id == int(id)):
+                                        print(
+                                            "i asked you for coordinateX , coordinateZ , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
+                                        x, z, id = input().split()
+                                    for seedss in lastResult:
+                                        if gL.generate(0, [[id, x, z], 0, seedss, biome]) == -1:
+                                            lastResult.remove(seedss)
+                                            print("Seed removed, good job! ", seedss)
+                                    i += 1
+                                    if i > 4:
+                                        print("pls send me what you entered on discord, Neil #4879")
+                                if len(lastResult) == 1:
+                                    print("here your seed", lastResult[0])
+                                    os.system("pause")
+                                    print("Quit? Y/N")
+                                    response = input().lower()
+                                    if not (response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non",
+                                                         "nix",
+                                                         "nay", "no way", "go fish"]):
+                                        sys.exit()
+                            else:
+                                print('Multiples Full Seed found',lastResult)
 
-                            os.system("pause")
-                        else:
-                            print("multiple seed", lastResult)
-
-    print(fullResults)
+    print("Calculation done, here the seed(s)", lastResult)
 
 
 if __name__ == '__main__':

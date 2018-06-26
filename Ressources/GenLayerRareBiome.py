@@ -15,7 +15,7 @@ class GenLayerRareBiome(Main):
                 k=aint[j+1+(i+1)*(aW+2)]
                 if not self.nextIntGen(57):
                     if k==1:
-                        aint1[j+i*aW]=128 #mutated plains
+                        aint1[j+i*aW]=129 #mutated plains
                     else:
                         aint1[j + i * aW] =k
                 else:
