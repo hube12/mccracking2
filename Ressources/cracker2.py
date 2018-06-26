@@ -86,6 +86,9 @@ def canSpawnStruct(params):
         l = nextInt(60, currentSeed + incompleteRand, 4, True)[0]
         k, m = (l[0] + l[1]) // 2, (l[2] + l[3]) // 2
     if chunkX % modulus == k and m == chunkZ % modulus:
+        if indice > 4:	
+-            print(	
+-                "In case you want to shut down, copy this number somewhere: it is likely to be a good one \n" + str(currentSeed) +" You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
         if indice == len(liste) - 1:
             return currentSeed
         return canSpawnStruct((seed, pillar, indice + 1))
@@ -212,7 +215,7 @@ def main(datapack, ram, core, ok):
             tempo = time.time() - t
             print("First roll took: " + str(tempo) + " expected time for the whole thing " + str(
                 (2 ** (32 - mem)) * tempo / 60) + " min")
-
+        print("We are on roll ",roll,"which represent ", roll/(2 ** (32 - mem))*100, "%","It took: ",time.time() - t," seconds")
         if len(fullResults):
             if not flagAuto:
                 print("Structure Seed", fullResults[0])
