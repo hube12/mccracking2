@@ -1,0 +1,1 @@
+pyinstaller -F -n SeedCrackerByNeil -p Ressources Main.py
