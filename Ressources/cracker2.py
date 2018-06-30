@@ -90,7 +90,7 @@ def canSpawnStruct(params):
         if indice > 3:
             print()
             print(
-                "In case you want to shut down, copy this number somewhere: it is likely to be a good one \n" + str(currentSeed) +" You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
+                "In case you want to shut down, copy this number somewhere: it is likely to be a good one : " + str(currentSeed) +"\n You can send me that number and your data.txt on discord Neil #4879 if you need to shutdown the program")
         if indice == len(liste) - 1:
             return currentSeed
         return canSpawnStruct((seed, pillar, indice + 1))
@@ -220,9 +220,10 @@ def main(datapack, ram, core, ok):
             print("First roll took: " + str(round(tempo)) + "seconds expected time for the whole thing " + str(round(
                 (2 ** (32 - mem)) * tempo / 60*1.2)) + " min")
         else:
-            print("[%-50s] %d%% \r" % ('=' * round(roll / (2 ** (32 - mem + 1)) * 100), roll / (2 ** (32 - mem)) * 100),
+            if not len(fullResults):
+                print("[%-50s] %d%% \r" % ('=' * round(roll / (2 ** (32 - mem + 1)) * 100), roll / (2 ** (32 - mem)) * 100),
                   end='', flush=True)
-            print('\x08' * 58, end="", flush=True)
+                print('\x08' * 58, end="", flush=True)
             #print('\x08' * round(roll / (2 ** (32 - mem + 1)) * 100) + " " + str(round(roll / (2 ** (32 - mem)) * 100, 2)) + "%", end=' ', flush=True)
             #sys.stdout.write("[%-100s] %d%% \r" % ('=' * round(roll/(2 ** (32 - mem))*100), roll/(2 ** (32 - mem))*100))
             #sys.stdout.flush()
@@ -280,7 +281,7 @@ def main(datapack, ram, core, ok):
                             resultss = pool.imap_unordered(couple, range(i * ((1 << 8) - 1), ((1 << 8) - 1) * (i + 1)))
                             lastResult.extend([p for p in resultss if p != -1])
                         print("[%-50s] %d%% \r" % (
-                        '=' * round(i / (1 << 8) * 100), i / ((1 << 8)-1) * 100),
+                        '=' * round(i / (1 << 7) * 100), i / ((1 << 8)-1) * 100),
                               end='', flush=True)
                         print('\x08' * 58, end="", flush=True)
                     if len(lastResult) == 1:
