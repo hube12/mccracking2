@@ -281,7 +281,7 @@ def main(datapack, ram, core, ok):
                             resultss = pool.imap_unordered(couple, range(i * ((1 << 8) - 1), ((1 << 8) - 1) * (i + 1)))
                             lastResult.extend([p for p in resultss if p != -1])
                         print("[%-50s] %d%% \r" % (
-                        '=' * round(i / (1 << 7) * 100), i / ((1 << 8)-1) * 100),
+                        '=' * round(i / (1 << 9) * 100), i / ((1 << 8)-1) * 100),
                               end='', flush=True)
                         print('\x08' * 58, end="", flush=True)
                     if len(lastResult) == 1:
@@ -302,24 +302,26 @@ def main(datapack, ram, core, ok):
                                 i = 0
                                 while len(lastResult) > 1:
                                     print("multiple seed", lastResult)
+                                    print("i will need a few more biome to reduce the list of seeds")
                                     while True:
                                         try:
                                             print("Enter X , Z , BiomeId")
-                                            x, z, id = map(int, input().split(","))
+                                            x, z, bid = map(int, input().split(","))
                                             break
                                         except ValueError:
                                             print("i asked you for X , Z , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
                                             continue
 
                                     for seedss in lastResult:
-                                        if gL.generate(0, [[id, x, z], 0, seedss, biome]) == -1:
+                                        if gL.generate(0, [[(bid, x, z)], 0, seedss, biome]) == -1:
                                             lastResult.remove(seedss)
                                             print("Seed removed, good job! ", seedss)
                                     i += 1
                                     if i > 4:
                                         print("pls send me what you entered on discord, Neil #4879 : " + str(structureSeed) +"\n or you can continue reducing but you are most likely not using the right biome, pls use rarer biomes")
                                 if len(lastResult) == 1:
-                                    print("here your seed", lastResult[0])
+                                    print()
+                                    print("here your seed, have a good day", lastResult[0])
                                     os.system("pause")
                                     print("Quit? Y/N")
                                     response = input().lower()
