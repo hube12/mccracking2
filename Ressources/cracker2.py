@@ -212,13 +212,14 @@ def main(datapack, ram, core, ok):
             paramlist = itertools.product(range(chunksize * roll, chunksize * (roll + 1)), towerNumber, [0])
             results = pool.imap_unordered(canSpawnStruct, paramlist, 1000)
             fullResults.extend([p for p in results if p != -1])
+        
+        
         flagContinue = True
         if not roll:
             tempo = time.time() - t
             print("First roll took: " + str(round(tempo)) + "seconds expected time for the whole thing " + str(round(
                 (2 ** (32 - mem)) * tempo / 60*1.2)) + " min")
         else:
-
             print("[%-50s] %d%% \r" % ('=' * round(roll / (2 ** (32 - mem + 1)) * 100), roll / (2 ** (32 - mem)) * 100),
                   end='', flush=True)
             print('\x08' * 58, end="", flush=True)
@@ -241,16 +242,14 @@ def main(datapack, ram, core, ok):
                             "negative", "go fish"]:
                 print("Beginning layer calculation, gonna take a while...")
             else:
-                try:
-                    print("Enter chunkX,chunkZ")
-                    chunkX, chunkZ = map(int, input().split(","))
-                except ValueError:
-                    print("Come on, Enter chunkX,chunkZ with numbers")
-                    chunkX, chunkZ = input().split(",")
-                    while not chunkX == int(chunkX) and chunkZ == int(chunkZ):
-                        print("Come on, Enter chunkX,chunkZ with numbers")
-                        chunkX, chunkZ = input().split(",")
-                    chunkZ, chunkX = int(chunkZ), int(chunkX)
+                while True:
+                    try:
+                        print("Enter chunkX,chunkZ")
+                        chunkX, chunkZ = map(int, input().split(","))
+                        break
+                    except ValueError:
+                        print("Come on, Enter chunkX,chunkZ with numbers, do notice i need the ',' ")
+                        continue
 
                 print(
                     "Enter Structure Type: o for ocean monument, e for end cities, m for mansion, v for village, s for all the rest (witch hut, igloo, desert temple, jungle temple)")
@@ -268,9 +267,9 @@ def main(datapack, ram, core, ok):
                         fullResults.remove(seeds)
                 if not flagElim:
                     print(
-                        "I did not eliminate a Seed, i will assume that this one is a good one and start cracking the last 16bit, its most likely your desired structure seed, these next calculation could take a while...")
+                        "I did not eliminate a Seed, i will assume that this (these) one is (are) a good one and start cracking the last 16bit, \n its most likely your desired structure seed, these next calculation could take a while...")
                 if not len(fullResults):
-                    print("Too bad, i cant pin down for now, i will catch you later")
+                    print("Too bad, i cant pin down for now, i will catch you later, searching for another structure seed")
                     flagContinue = False
             temporaire=[]
             if flagContinue:
@@ -280,59 +279,70 @@ def main(datapack, ram, core, ok):
                             couple = functools.partial(gL.generate, data=[coordinates, 0, structureSeed, biome])
                             resultss = pool.imap_unordered(couple, range(i * ((1 << 8) - 1), ((1 << 8) - 1) * (i + 1)))
                             lastResult.extend([p for p in resultss if p != -1])
-                        if len(lastResult) == 1:
+                        print("[%-50s] %d%% \r" % (
+                        '=' * round(i / (1 << 8) * 100), i / ((1 << 8)-1) * 100),
+                              end='', flush=True)
+                        print('\x08' * 58, end="", flush=True)
+                    if len(lastResult) == 1:
                             print("Here is your seed, it match everything, hope you are happy", lastResult[0])
                             if not flagAuto:
                                 os.system("pause")
                                 print("Quit? Y/N")
                                 response = input().lower()
                             else:
-                                response="n"
+                                response = "n"
                             if not (response in ["N",
                                                  "no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non",
                                                  "nix",
                                                  "nay", "no way", "go fish"]):
                                 sys.exit()
-                        elif len(lastResult) != 0:
+                    elif len(lastResult) != 0:
                             if not flagAuto:
                                 i = 0
                                 while len(lastResult) > 1:
                                     print("multiple seed", lastResult)
-                                    print(
-                                        "i will ask you for coordinateX , coordinateZ , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
-                                    x, z, id = input().split()
-                                    while not (x == int(x) and z == int(z) and id == int(id)):
-                                        print(
-                                            "i asked you for coordinateX , coordinateZ , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
-                                        x, z, id = input().split()
+                                    while True:
+                                        try:
+                                            print("Enter X , Z , BiomeId")
+                                            x, z, id = map(int, input().split(","))
+                                            break
+                                        except ValueError:
+                                            print("i asked you for X , Z , BiomeId to determine which is the correct one (pls do notice, you need to input ',' ")
+                                            continue
+
                                     for seedss in lastResult:
                                         if gL.generate(0, [[id, x, z], 0, seedss, biome]) == -1:
                                             lastResult.remove(seedss)
                                             print("Seed removed, good job! ", seedss)
                                     i += 1
                                     if i > 4:
-                                        print("pls send me what you entered on discord, Neil #4879")
+                                        print("pls send me what you entered on discord, Neil #4879 : " + str(structureSeed) +"\n or you can continue reducing but you are most likely not using the right biome, pls use rarer biomes")
                                 if len(lastResult) == 1:
                                     print("here your seed", lastResult[0])
                                     os.system("pause")
                                     print("Quit? Y/N")
                                     response = input().lower()
-                                    if not (response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh", "non",
+                                    if not (response in ["no", "n", "0", "nope", "i will not", 'ney', "nah", "uh-uh",
+                                                         "non",
                                                          "nix",
                                                          "nay", "no way", "go fish"]):
                                         sys.exit()
                             else:
-                                print('Multiples Full Seed found',lastResult)
-                    if len(lastResult)==0:
-                        print("Layer inspection revealed that this seed is most likely not a structure seed, which could be totally wrong, i recommend you to send me this seed + your data.txt on discord: Neil #4879, i will run", structureSeed)
+                                print('Multiples Full Seed found', lastResult)
+                        
+                        
+                    else:
+                        print("Layer inspection revealed that this seed" +str(structureSeed) +"is most likely not a structure seed, which could be totally wrong, i recommend you to send me this seed + your data.txt on discord: Neil #4879, i will run")
                         temporaire.append(structureSeed)
                 for seedss in temporaire:
                     fullResults.remove(seedss)
 
 
 
-
-    print("Calculation done, here the seed(s)", lastResult)
+    if len(lastResult):
+        print("Calculation done, here the seed(s)", lastResult)
+    else:
+        print("Pls send me your data on discord (Neil #4879), i will investigate what went wrong")
     os.system("pause")
 
 
