@@ -1,3 +1,6 @@
+Video: https://www.youtube.com/watch?v=UFj-3IvLXXM&t=61s
+Compiled source: https://mega.nz/#!iGhG1KzT!Uw5bKMfuE3hmta6cbUgacGhF1gAhZia8DbbT2lbo5dw or https://files.fm/u/jhh32z48
+
 Warning i only support window for now, the link to the code is downthere is you have python 3.X on MacOS or linux just launch the Main.py with the data.txt in the same folder, you may need numpy and other regular library...
 
 First download the SeedCracker.zip
