@@ -8,7 +8,7 @@ unzip it then launch main.html with Chrome or Mozilla Firefox
 
 How to use the seed cracking tool:
 
-You need to get to the end and get the end pillars height for that get the location of your end platform and drag drop the number on the yellow case, if you dont like that method you can also input the number in the white box but it will start with the lower one (real world coordinate are x=0,z=42 and go clockwise. Once that done you will need to gather at least 5+1 structure chunks.
+You need to get to the end and get the end pillars height for that get the location of your end platform and drag drop the number on the yellow case, if you dont like that method you can also input the number in the white box but it will start with the lower one (real world coordinate are x=-42,z=0 and go clockwise. Once that done you will need to gather at least 5+1 structure chunks.
 
 How to get the structure Chunks:
 
@@ -18,7 +18,7 @@ You only need to input 5 in the right panel
 
 Dont use Igloo or Witch hut they aren't always reliable (jungle temple could also be an issue but i dont have experienced it for now).
 -For Ocean monument, you need to get the central chunk where the Top elder guardian is (the bastion like i call it)
--For Mansion, you need to get the chunk at the entrance, its the one that start by the left side of the entrance and contain the main staircase to the next floor
+-For Mansion, you need to get the chunk at the entrance, its the one that start by the right side of the entrance and contain the main staircase to the next floor
 -For end cities, you need to get the chunk of the base of the end city, most of end cities base generate in the corner of a chunk and their main part is in that chunk, that's the chunk you are looking for
 -For Village, just locate the well, its always that chunk
 -For desert temple, its the main chunk where the chests are and the Tnt, it contains at least 16x16 of the whole structure
